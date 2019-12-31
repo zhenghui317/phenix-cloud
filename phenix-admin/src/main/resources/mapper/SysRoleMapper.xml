@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.phenix.admin.mapper.SysRoleMapper">
+    <resultMap id="ResultMap" type="com.phenix.admin.entity.SysRole">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="role_code" property="roleCode" jdbcType="VARCHAR"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="role_desc" property="roleDesc" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_persist" property="isPersist" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="selectRoleList" resultType="com.phenix.admin.entity.SysRole">
+        select role_id,
+               tenant_id,
+               role_code,
+               role_name,
+               role_desc,
+               status,
+               is_persist,
+               create_user_id,
+               create_time,
+               update_user_id,
+               update_time,
+               is_delete
+        from sys_role
+    </select>
+</mapper>

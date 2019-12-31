@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phenix.admin.mapper.SysAuthorityUserMapper">
+    <resultMap id="ResultMap" type="com.phenix.admin.entity.SysAuthorityUser">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime"/>
+    </resultMap>
+    <resultMap id="UserAuthorityMenu" type="com.phenix.admin.pojo.dto.AuthoritySysMenuDTO"
+               extends="com.phenix.admin.mapper.SysMenuMapper.ResultMap">
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="sysAuthority" jdbcType="VARCHAR" property="authority"/>
+        <collection property="actionList" column="{menuId=menu_id,userId=user_id}"
+                    select="com.phenix.admin.mapper.SysAuthorityMapper.selectAuthorityAction"/>
+    </resultMap>
+
+    <select id="selectAuthorityByUser"
+            resultMap="com.phenix.admin.mapper.SysAuthorityMapper.Authority">
+        SELECT
+            a.authority_id,
+            a.authority,
+            up.expire_time,
+            'sysUser' as owner
+        FROM
+            sys_authority_user AS up
+                INNER JOIN sys_authority AS a ON up.authority_id = a.authority_id
+        WHERE
+            up.user_id = #{userId}
+            and  a.status = 1
+            and  a.is_delete = 0
+    </select>
+
+    <select id="selectAuthorityMenuByUser"
+            resultMap="UserAuthorityMenu">
+         SELECT
+            a.authority_id,
+            a.authority,
+            a.`status`,
+            m.*,
+            ua.user_id,
+            ua.expire_time
+        FROM
+            sys_authority_user AS ua
+       INNER JOIN sys_authority AS a ON ua.authority_id = a.authority_id
+       INNER JOIN sys_menu AS m ON a.menu_id = m.menu_id
+        WHERE
+                ua.user_id = #{userId}
+                and a.authority_type = 1
+                and a.status = 1
+                and a.is_delete = 0
+                and m.is_delete = 0
+    </select>
+
+</mapper>

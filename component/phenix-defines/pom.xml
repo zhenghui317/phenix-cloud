@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.phenix</groupId>
+		<artifactId>phenix-spring-boot-starter-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.phenix</groupId>
+	<artifactId>phenix-defines</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>phenix-defines</name>
+	<description>定制加定义包</description>
+	<packaging>jar</packaging>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>phoenix-releases</id>
+			<url>https://repo.rdc.aliyun.com/repository/114773-release-m6CZw0/</url>
+		</repository>
+		<snapshotRepository>
+			<id>phoenix-snapshots</id>
+			<url>https://repo.rdc.aliyun.com/repository/114773-snapshot-Hz4DGO/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

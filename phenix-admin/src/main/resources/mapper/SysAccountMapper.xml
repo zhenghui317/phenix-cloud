@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phenix.admin.mapper.SysAccountMapper">
+  <resultMap id="ResultMap" type="com.phenix.admin.entity.SysAccount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="account_id" jdbcType="BIGINT" property="accountId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="sysAccount" jdbcType="VARCHAR" property="sysAccount" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="account_type" jdbcType="VARCHAR" property="accountType" />
+    <result column="domain" jdbcType="VARCHAR" property="domain" />
+    <result column="register_ip" jdbcType="VARCHAR" property="registerIp"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    <result column="status" jdbcType="TINYINT" property="status"/>
+  </resultMap>
+</mapper>

@@ -1,0 +1,9 @@
+/.idea
+/mvnw
+/mvnw.cmd
+mvnw
+mvnw.cmd
+/component/phenix-core/mvnw
+/component/phenix-core/mvnw.cmd
+/component/phenix-defines/mvnw
+/component/phenix-defines/mvnw.cmd

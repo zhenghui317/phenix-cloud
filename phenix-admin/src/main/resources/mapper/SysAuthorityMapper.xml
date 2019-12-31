@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.phenix.admin.mapper.SysAuthorityMapper">
+    <resultMap id="ResultMap" type="com.phenix.admin.entity.SysAuthority">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="menu_id" jdbcType="BIGINT" property="menuId"/>
+        <result column="api_id" jdbcType="BIGINT" property="apiId"/>
+        <result column="action_id" jdbcType="BIGINT" property="actionId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+
+    <resultMap id="AuthorityResource" type="com.phenix.admin.pojo.dto.AuthorityResourceDTO">
+        <result column="path" jdbcType="VARCHAR" property="path"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="service_id" jdbcType="VARCHAR" property="serviceId"/>
+        <result column="is_auth" jdbcType="INTEGER" property="isAuth"/>
+        <result column="is_open" jdbcType="INTEGER" property="isOpen"/>
+        <result column="prefix" jdbcType="VARCHAR" property="prefix"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+
+    <resultMap id="Authority" type="com.phenix.core.security.authority.PhenixAuthority">
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime"/>
+        <result column="owner" jdbcType="VARCHAR" property="owner"/>
+    </resultMap>
+
+    <resultMap id="AuthorityMenu" type="com.phenix.admin.pojo.dto.AuthoritySysMenuDTO"
+               extends="com.phenix.admin.mapper.SysMenuMapper.ResultMap">
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <collection property="actionList" column="{menuId=menu_id,status=status}" select="selectAuthorityAction"/>
+    </resultMap>
+
+    <resultMap id="AuthorityAction" type="com.phenix.admin.pojo.dto.AuthoritySysActionDTO"
+               extends="com.phenix.admin.mapper.SysActionMapper.ResultMap">
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="service_id" jdbcType="VARCHAR" property="serviceId"/>
+    </resultMap>
+
+    <resultMap id="AuthorityApi" type="com.phenix.admin.pojo.dto.AuthoritySysApiDTO"
+               extends="com.phenix.admin.mapper.SysApiMapper.ResultMap">
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="prefix" jdbcType="VARCHAR" property="prefix"/>
+    </resultMap>
+
+    <select id="selectAuthorityMenu" resultMap="AuthorityMenu">
+        SELECT
+        a.authority_id,
+        a.authority,
+        m.*
+        FROM
+        sys_authority AS a
+        INNER JOIN sys_menu AS m ON a.menu_id = m.menu_id
+        <where>
+            m.is_delete = 0
+            <if test="status!=null">
+                AND m.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAuthorityAction" resultMap="AuthorityAction">
+        SELECT
+        a.authority_id,
+        a.authority,
+        o.action_id, service_id, action_code, action_name, action_desc, o.menu_id, priority, o.status, is_persist,
+        o.create_user_id, o.create_time, o.update_user_id, o.update_time, o.is_delete
+        FROM
+        sys_authority AS a
+        INNER JOIN sys_action AS o ON a.action_id = o.action_id
+        <if test="roleId!=null">
+            INNER JOIN sys_authority_role AS ra ON ra.authority_id = a.authority_id
+        </if>
+        <if test="userId!=null">
+            INNER JOIN sys_authority_user AS ua ON ua.authority_id = a.authority_id
+        </if>
+        <where>
+            a.is_delete = 0
+            AND o.is_delete = 0
+            <if test="status!=null">
+                AND o.status = #{status}
+            </if>
+            <if test="menuId!=null">
+                AND o.menu_id = #{menuId}
+            </if>
+            <if test="roleId!=null">
+                AND ra.role_id = #{roleId}
+            </if>
+            <if test="userId!=null">
+                AND ua.user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAuthorityApi" resultMap="AuthorityApi">
+        SELECT
+        a.authority_id,
+        a.authority,
+        sysApi.*
+        FROM
+        sys_authority AS a
+        INNER JOIN sys_api AS sysApi ON a.api_id = sysApi.api_id
+        <where>
+            a.is_delete = 0
+            AND sysApi.is_delete = 0
+            <if test="status!=null">
+                AND sysApi.status = #{status}
+            </if>
+            <if test="serviceId!=null and serviceId!=''">
+                AND sysApi.service_id = #{serviceId}
+            </if>
+        </where>
+        order by sysApi.create_time desc
+    </select>
+
+    <select id="selectAuthorityAll"
+            resultMap="Authority">
+        select
+        authority_id,
+        authority,
+        'sysUser' as owner
+        from sys_authority
+        <where>
+            is_delete = 0
+            <if test="status!=null">
+                AND status = #{status}
+            </if>
+            <if test="type!=null and type!='' and type == '1'.toString()">
+                and api_id is null
+            </if>
+            <if test="type!=null and type!='' and type == '2'.toString()">
+                and api_id is not null
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllAuthorityResource" resultMap="AuthorityResource">
+        SELECT a.authority_id,
+               a.authority,
+               sysMenu.path,
+               sysMenu.service_id,
+               '1' AS is_auth,
+               '1' AS is_open,
+               sysMenu.`status`
+        FROM sys_authority AS a
+                 INNER JOIN sys_menu AS sysMenu ON a.menu_id = sysMenu.menu_id
+        WHERE sysMenu.`status` = 1
+          AND a.is_delete = 0
+          AND sysMenu.is_delete = 0
+        UNION ALL
+        SELECT a.authority_id,
+               a.authority,
+               sysApi.path,
+               sysApi.service_id,
+               sysApi.is_auth,
+               sysApi.is_open,
+               sysApi.`status`
+        FROM sys_authority AS a
+                 INNER JOIN sys_api AS sysApi ON a.api_id = sysApi.api_id
+        where a.is_delete = 0
+        UNION ALL
+        SELECT a.authority_id,
+               a.authority,
+               sysApi.path,
+               sysApi.service_id,
+               sysApi.is_auth,
+               sysApi.is_open,
+               sysApi.`status`
+        FROM sys_authority_action AS ac
+                 INNER JOIN sys_authority AS a ON a.action_id = ac.action_id
+                 INNER JOIN sys_authority AS a2 ON ac.authority_id = a2.authority_id
+                 INNER JOIN sys_api AS sysApi ON a2.api_id = sysApi.api_id
+                 INNER JOIN sys_action AS sysAction ON ac.action_id = sysAction.action_id
+        WHERE sysAction.`status` = 1
+          AND a.is_delete = 0
+          AND a2.is_delete = 0
+          AND sysApi.is_delete = 0
+          AND sysAction.is_delete = 0
+    </select>
+</mapper>
